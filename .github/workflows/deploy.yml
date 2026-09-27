@@ -1,3 +1,16 @@
+# Автодеплой сайта ecotechnew.ru на хостинг Джино по SFTP (порт 2222).
+# FTP (порт 21) с серверов GitHub недоступен: соединение обрывается по таймауту (27.09.2026).
+# Запуск: каждый push в main, а также вручную (Actions → «Деплой на Джино» → Run workflow).
+# Секреты репозитория (Settings → Secrets and variables → Actions → Secrets):
+#   FTP_SERVER    — технический адрес из cp.jino.ru → Управление → Техническая информация
+#   FTP_USERNAME  — FTP-аккаунт из cp.jino.ru → Управление → FTP-аккаунты
+#   FTP_PASSWORD  — пароль этого FTP-аккаунта
+# SFTP использует те же адрес, логин и пароль, что и FTP (справка Джино «Удалённый доступ»).
+# Переменные (там же → Variables), необязательные:
+#   FTP_SERVER_DIR — каталог сайта на сервере относительно корня FTP-аккаунта,
+#                    по умолчанию domains/ecotechnew.ru/ ; обязательно со слешем в конце
+#   FTP_PORT       — порт SFTP, по умолчанию 2222
+
 name: Деплой на Джино
 
 on:
@@ -17,22 +30,28 @@ jobs:
     name: Проверка сайта
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
       - name: Ссылки, ресурсы, внешние зависимости
         run: node scripts/check.mjs
 
   deploy:
-    name: Выгрузка по FTP
+    name: Выгрузка по SFTP
     needs: check
     runs-on: ubuntu-latest
     environment:
       name: production
       url: https://ecotechnew.ru/
+    env:
+      HOST: ${{ secrets.FTP_SERVER }}
+      PORT: ${{ vars.FTP_PORT || '2222' }}
+      SFTP_USER: ${{ secrets.FTP_USERNAME }}
+      LFTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+      DIR: ${{ vars.FTP_SERVER_DIR || 'domains/ecotechnew.ru/' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Сборка каталога публикации
         run: |
@@ -41,15 +60,23 @@ jobs:
           cp -r assets dist/
           find dist -type f | sort
 
+      - name: Проверка доступности сервера
+        run: |
+          HOST="${HOST#sftp://}"; HOST="${HOST#ftp://}"; HOST="${HOST%/}"
+          timeout 15 bash -c "</dev/tcp/$HOST/$PORT" \
+            && echo "Порт $PORT открыт" \
+            || { echo "::error::Сервер $HOST:$PORT недоступен с GitHub (таймаут). Нужен доступ для зарубежных IP — вопрос в поддержку Джино."; exit 1; }
+
+      - name: Установка lftp
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+
       - name: Выгрузка на Джино
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ${{ vars.FTP_PROTOCOL || 'ftps' }}
-          port: 21
-          local-dir: ./dist/
-          server-dir: ${{ vars.FTP_SERVER_DIR || 'domains/ecotechnew.ru/' }}
-          dangerous-clean-slate: false
-          log-level: standard
+        run: |
+          HOST="${HOST#sftp://}"; HOST="${HOST#ftp://}"; HOST="${HOST%/}"
+          lftp --env-password -u "$SFTP_USER" -p "$PORT" "sftp://$HOST" <<LFTP
+          set sftp:auto-confirm yes
+          set net:timeout 20
+          set net:max-retries 2
+          mirror --reverse --verbose --parallel=4 --exclude-glob .git* dist/ "$DIR"
+          bye
+          LFTP
