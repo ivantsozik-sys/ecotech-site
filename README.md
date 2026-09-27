@@ -4,26 +4,21 @@
 
 ## Состав
 
+Сайт v1.0 от 26.09.2026 (утверждён владельцем), многостраничный, статический.
+
 ```
-index.html                 сайт: 15 разделов в одном файле, переключение по адресу #раздел (#ekofiltr, #kontakty …)
-404.html                   страница ошибки
-robots.txt, sitemap.xml    для поисковых систем
-favicon.ico                значок сайта (16/32/48 px)
-.htaccess                  Apache на Джино: кэш, сжатие, заголовки безопасности (CSP), 404, www → без www, HTTPS
-assets/
-  css/fonts.css            локальные шрифты (SIL OFL 1.1), переменные woff2: Manrope, Inter, JetBrains Mono
-  css/tokens.css           токены DS 2.2.3 (PRODUCTION FROZEN), выгрузка export/tokens.json — вручную не править
-  css/site.css             стили сайта; в конце — классы u1…u28 вместо встроенных style="…"
-  js/theme.js              светлая/тёмная тема до первой отрисовки
-  js/site.js               тема, меню, шапка, фильтры реестра, форма, переключение разделов
-  fonts/                   3 файла woff2 (~330 КБ)
-  img/logo/                Logo Master v1.1.1: ЭКОТЕХ (горизонтальный, знак, вертикальный тёмный), Экофильтр, Экомодуль, Экоцикл — светлый и тёмный
-  img/photo/               фото Экофильтра и Экомодуля РМ-1 (1600 px)
-  img/                     значки 16/32, apple-touch-icon, og-image.png (превью для ссылок)
-scripts/check.mjs          проверка перед выгрузкой: ссылки, ресурсы, адреса разделов, нет внешних ресурсов, нет встроенных style/скриптов/обработчиков
-.github/workflows/deploy.yml  проверка → ветка deploy (резервно — SFTP вручную)
-scripts/jino-pull.sh       забирает ветку deploy на хостинг (задание по расписанию на Джино)
+index.html, 404.html             главная и страница ошибки
+platforma/ ekofiltr/ ekomodul/ ekocikl/ dokazatelstva/ proekty/
+primenenie/ (promyshlennost/ gosudarstvo/ investoram/) o-kompanii/ kontakty/ politika/ soglasie/
+robots.txt, sitemap.xml          для поисковых систем
+.htaccess                        Apache на Джино: 404, HTTPS, www → без www, кэш, сжатие, заголовки безопасности (CSP)
+assets/                          tokens.css, site.css, pages.css, flow.css, site.js, fonts/, img/, logo/
+scripts/check.mjs                проверка перед публикацией: ссылки и ресурсы всех страниц, внешние ресурсы, встроенные скрипты по хешу CSP
+scripts/jino-pull.sh             забирает ветку deploy на хостинг (задание по расписанию на Джино)
+.github/workflows/deploy.yml     проверка → ветка deploy (резервно — SFTP вручную)
 ```
+
+Встроенный скрипт темы разрешён в CSP по хешу sha256. Если его текст изменится, `scripts/check.mjs` остановит публикацию и покажет новый хеш — его нужно заменить в `.htaccess`.
 
 ## Первый запуск
 

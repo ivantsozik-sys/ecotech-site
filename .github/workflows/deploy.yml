@@ -1,7 +1,7 @@
 # Публикация сайта ecotechnew.ru.
 # Основная схема (с 27.09.2026): сайт сам забирает обновления с GitHub.
 #   1) push в main → проверка сайта;
-#   2) при успехе собранный сайт публикуется в ветку deploy (site/ + version.txt + jino-pull.sh);
+#   2) при успехе весь сайт (всё, кроме служебных файлов репозитория) публикуется в ветку deploy (site/ + version.txt + jino-pull.sh);
 #   3) задание по расписанию на Джино раз в 5 минут запускает jino-pull.sh и копирует site/ в каталог сайта.
 # Зарубежный доступ к хостингу не нужен: соединение идёт с Джино на GitHub.
 #
@@ -48,8 +48,8 @@ jobs:
       - name: Сборка
         run: |
           mkdir -p out/site
-          cp index.html 404.html robots.txt sitemap.xml favicon.ico .htaccess out/site/
-          cp -r assets out/site/
+          rsync -a --exclude '.git' --exclude '.github' --exclude 'scripts' --exclude 'out' --exclude 'dist' \
+            --exclude 'README.md' --exclude '.gitignore' --exclude '.editorconfig' ./ out/site/
           cp scripts/jino-pull.sh out/jino-pull.sh
           { echo "$GITHUB_SHA"; date -u +%Y-%m-%dT%H:%M:%SZ; } > out/version.txt
           find out -type f | sort
@@ -87,8 +87,8 @@ jobs:
       - name: Сборка каталога публикации
         run: |
           mkdir -p dist
-          cp index.html 404.html robots.txt sitemap.xml favicon.ico .htaccess dist/
-          cp -r assets dist/
+          rsync -a --exclude '.git' --exclude '.github' --exclude 'scripts' --exclude 'out' --exclude 'dist' \
+            --exclude 'README.md' --exclude '.gitignore' --exclude '.editorconfig' ./ dist/
 
       - name: Проверка доступности сервера
         run: |

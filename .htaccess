@@ -1,4 +1,4 @@
-# ЭКОТЕХ — настройки Apache для хостинга Джино
+# ЭКОТЕХ — настройки Apache для хостинга Джино (сайт v1.0 от 26.09.2026)
 AddDefaultCharset UTF-8
 DirectoryIndex index.html
 ErrorDocument 404 /404.html
@@ -6,12 +6,9 @@ Options -Indexes
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
-  # Служебный журнал автодеплоя не отдаём наружу
-  RewriteRule (^|/)\.ftp-deploy-sync-state\.json$ - [F,L]
 
-  # HTTP → HTTPS (включено 27.09.2026; сертификат выпущен в cp.jino.ru).
-  # На Джино протокол приходит в заголовке X-Forwarded-Protocol (справка Джино, SSL).
-  # Условие «=http», а не «!=https»: если заголовка нет, перенаправления нет — цикл исключён.
+  # HTTP → HTTPS (27.09.2026). На Джино протокол приходит в заголовке X-Forwarded-Protocol.
+  # Условие «=http»: если заголовка нет, перенаправления нет — цикл исключён.
   RewriteCond %{HTTP:X-Forwarded-Protocol} =http
   RewriteRule ^ https://ecotechnew.ru%{REQUEST_URI} [R=301,L]
 
@@ -23,7 +20,6 @@ Options -Indexes
 <IfModule mod_mime.c>
   AddType font/woff2 .woff2
   AddType image/svg+xml .svg
-  AddType application/manifest+json .webmanifest
 </IfModule>
 
 <IfModule mod_deflate.c>
@@ -34,11 +30,11 @@ Options -Indexes
   ExpiresActive On
   ExpiresDefault "access plus 1 hour"
   ExpiresByType text/html "access plus 0 seconds"
-  ExpiresByType text/css "access plus 7 days"
-  ExpiresByType application/javascript "access plus 7 days"
+  ExpiresByType text/css "access plus 1 day"
+  ExpiresByType application/javascript "access plus 1 day"
   ExpiresByType image/svg+xml "access plus 30 days"
+  ExpiresByType image/jpeg "access plus 30 days"
   ExpiresByType image/png "access plus 30 days"
-  ExpiresByType image/x-icon "access plus 30 days"
   ExpiresByType font/woff2 "access plus 1 year"
 </IfModule>
 
@@ -53,5 +49,6 @@ Options -Indexes
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
-  Header always set Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self'; font-src 'self'; script-src 'self'; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'self'"
+  # Сайт v1.0: встроенные атрибуты style и один встроенный скрипт темы (разрешён по хешу)
+  Header always set Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self' 'sha256-cXByWrxTx8+NUqqZLUJzjsmsa6BKztH978WiVpUYPcs='; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'self'"
 </IfModule>
