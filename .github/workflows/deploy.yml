@@ -1,15 +1,13 @@
-# Автодеплой сайта ecotechnew.ru на хостинг Джино по SFTP (порт 2222).
-# FTP (порт 21) с серверов GitHub недоступен: соединение обрывается по таймауту (27.09.2026).
-# Запуск: каждый push в main, а также вручную (Actions → «Деплой на Джино» → Run workflow).
-# Секреты репозитория (Settings → Secrets and variables → Actions → Secrets):
-#   FTP_SERVER    — технический адрес из cp.jino.ru → Управление → Техническая информация
-#   FTP_USERNAME  — FTP-аккаунт из cp.jino.ru → Управление → FTP-аккаунты
-#   FTP_PASSWORD  — пароль этого FTP-аккаунта
-# SFTP использует те же адрес, логин и пароль, что и FTP (справка Джино «Удалённый доступ»).
-# Переменные (там же → Variables), необязательные:
-#   FTP_SERVER_DIR — каталог сайта на сервере относительно корня FTP-аккаунта,
-#                    по умолчанию domains/ecotechnew.ru/ ; обязательно со слешем в конце
-#   FTP_PORT       — порт SFTP, по умолчанию 2222
+# Публикация сайта ecotechnew.ru.
+# Основная схема (с 27.09.2026): сайт сам забирает обновления с GitHub.
+#   1) push в main → проверка сайта;
+#   2) при успехе собранный сайт публикуется в ветку deploy (site/ + version.txt + jino-pull.sh);
+#   3) задание по расписанию на Джино раз в 5 минут запускает jino-pull.sh и копирует site/ в каталог сайта.
+# Зарубежный доступ к хостингу не нужен: соединение идёт с Джино на GitHub.
+#
+# Резервная выгрузка по SFTP (порт 2222) — только вручную: Actions → «Деплой на Джино» → Run workflow.
+# ИСТОРИЧЕСКОЕ: FTP (порт 21) с серверов GitHub недоступен; SFTP проходит не всегда (таймауты, 27.09.2026).
+# Секреты для резервной выгрузки: FTP_SERVER, FTP_USERNAME, FTP_PASSWORD; переменные FTP_SERVER_DIR, FTP_PORT.
 
 name: Деплой на Джино
 
@@ -37,9 +35,42 @@ jobs:
       - name: Ссылки, ресурсы, внешние зависимости
         run: node scripts/check.mjs
 
-  deploy:
-    name: Выгрузка по SFTP
+  publish:
+    name: Публикация в ветку deploy
     needs: check
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Сборка
+        run: |
+          mkdir -p out/site
+          cp index.html 404.html robots.txt sitemap.xml favicon.ico .htaccess out/site/
+          cp -r assets out/site/
+          cp scripts/jino-pull.sh out/jino-pull.sh
+          { echo "$GITHUB_SHA"; date -u +%Y-%m-%dT%H:%M:%SZ; } > out/version.txt
+          find out -type f | sort
+
+      - name: Запись в ветку deploy
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd out
+          git init -q -b deploy
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -qm "Сайт из ${GITHUB_SHA::7}"
+          git push -f "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" deploy
+          echo "Опубликовано: ${GITHUB_SHA::7}. Джино заберёт версию в течение 5 минут."
+
+  sftp:
+    name: Резервная выгрузка по SFTP
+    needs: check
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     environment:
       name: production
@@ -58,14 +89,13 @@ jobs:
           mkdir -p dist
           cp index.html 404.html robots.txt sitemap.xml favicon.ico .htaccess dist/
           cp -r assets dist/
-          find dist -type f | sort
 
       - name: Проверка доступности сервера
         run: |
           HOST="${HOST#sftp://}"; HOST="${HOST#ftp://}"; HOST="${HOST%/}"
           timeout 15 bash -c "</dev/tcp/$HOST/$PORT" \
             && echo "Порт $PORT открыт" \
-            || { echo "::error::Сервер $HOST:$PORT недоступен с GitHub (таймаут). Нужен доступ для зарубежных IP — вопрос в поддержку Джино."; exit 1; }
+            || { echo "::error::Сервер $HOST:$PORT недоступен с GitHub (таймаут). Основная схема — задание по расписанию на Джино."; exit 1; }
 
       - name: Установка lftp
         run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
@@ -77,6 +107,6 @@ jobs:
           set sftp:auto-confirm yes
           set net:timeout 20
           set net:max-retries 2
-          mirror --reverse --verbose --parallel=4 --exclude-glob .git* dist/ "$DIR"
+          mirror --reverse --verbose --parallel=4 dist/ "$DIR"
           bye
           LFTP
