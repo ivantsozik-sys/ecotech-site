@@ -9,11 +9,11 @@ Options -Indexes
   # Служебный журнал автодеплоя не отдаём наружу
   RewriteRule (^|/)\.ftp-deploy-sync-state\.json$ - [F,L]
 
-  # Переход на HTTPS. Включить после выпуска сертификата в cp.jino.ru
-  # (или использовать встроенное перенаправление в панели Джино — одно из двух, не оба).
-  # RewriteCond %{HTTPS} !=on
-  # RewriteCond %{HTTP:X-Forwarded-Proto} !https
-  # RewriteRule ^ https://ecotechnew.ru%{REQUEST_URI} [R=301,L]
+  # HTTP → HTTPS (включено 27.09.2026; сертификат выпущен в cp.jino.ru).
+  # На Джино протокол приходит в заголовке X-Forwarded-Protocol (справка Джино, SSL).
+  # Условие «=http», а не «!=https»: если заголовка нет, перенаправления нет — цикл исключён.
+  RewriteCond %{HTTP:X-Forwarded-Protocol} =http
+  RewriteRule ^ https://ecotechnew.ru%{REQUEST_URI} [R=301,L]
 
   # www → без www
   RewriteCond %{HTTP_HOST} ^www\.ecotechnew\.ru$ [NC]
@@ -42,7 +42,13 @@ Options -Indexes
   ExpiresByType font/woff2 "access plus 1 year"
 </IfModule>
 
+<IfModule mod_setenvif.c>
+  SetEnvIf X-Forwarded-Protocol "^(.*)$" XFP=$1
+</IfModule>
+
 <IfModule mod_headers.c>
+  # Диагностика перенаправления на HTTPS: какой протокол сообщил Джино
+  Header always set X-Ecotech-Proto "%{XFP}e"
   Header always set X-Content-Type-Options "nosniff"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set X-Frame-Options "SAMEORIGIN"
