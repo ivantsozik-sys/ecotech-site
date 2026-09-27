@@ -6,7 +6,7 @@ import { join, dirname } from 'node:path';
 const root = new URL('..', import.meta.url).pathname;
 const pages = ['index.html', '404.html'];
 const css = ['assets/css/fonts.css', 'assets/css/tokens.css', 'assets/css/site.css'];
-const required = ['robots.txt', 'sitemap.xml', 'favicon.ico', '.htaccess', 'assets/js/site.js'];
+const required = ['robots.txt', 'sitemap.xml', 'favicon.ico', '.htaccess', 'assets/js/site.js', 'assets/js/theme.js'];
 const errors = [];
 
 const local = (ref) => !/^(https?:|mailto:|tel:|data:|#)/.test(ref);
@@ -28,7 +28,16 @@ for (const page of pages) {
   }
   for (const [, ref] of html.matchAll(/<link[^>]+rel="stylesheet"[^>]+href="(https?:[^"]+)"/g)) errors.push(`${page}: внешний стиль ${ref}`);
   const ids = new Set([...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]));
-  for (const [, id] of html.matchAll(/href="#([^"]+)"/g)) if (!ids.has(id)) errors.push(`${page}: нет якоря #${id}`);
+  const pagesIds = new Set([...html.matchAll(/\sdata-page="([^"]+)"/g)].map((m) => m[1]));
+  // Адреса вида #страница или #страница.якорь (страницы переключаются по data-page)
+  for (const [, id] of html.matchAll(/href="#([^"]+)"/g)) {
+    const [pg, sub] = id.split('.');
+    const ok = ids.has(id) || (pagesIds.has(pg) && (!sub || ids.has(sub) || id.startsWith('kontakty.')));
+    if (!ok) errors.push(`${page}: нет якоря #${id}`);
+  }
+  if (/\sstyle="/.test(html)) errors.push(`${page}: встроенный атрибут style (запрещён CSP)`);
+  if (/<script(?![^>]*\ssrc=)(?![^>]*application\/ld\+json)[^>]*>/.test(html)) errors.push(`${page}: встроенный скрипт (запрещён CSP)`);
+  if (/\son[a-z]+="/.test(html)) errors.push(`${page}: обработчик в атрибуте (запрещён CSP)`);
 }
 
 for (const f of css) {
