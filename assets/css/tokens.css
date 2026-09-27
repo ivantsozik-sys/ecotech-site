@@ -1,0 +1,127 @@
+/*
+ * Токены сайта ЭКОТЕХ — производная от Дизайн-системы ЭКОТЕХ 2.2 (PRODUCTION FROZEN).
+ * Источник значений: README системы (палитра брендов 2.2, ряд Фибоначчи, шаг кегля ≈ √φ, сетка).
+ * Имена токенов совпадают с системой. Не править значения здесь — только патчем DS-2.2.x.
+ */
+:root {
+  /* База */
+  --graphite: #0E1F3D;
+  --surface-inverse: #0D1A2A;
+  --ink: #0E1F3D;
+  --ink-muted: #3E4C63;
+  --ink-subtle: #5B6880;
+  --surface: #FFFFFF;
+  --surface-subtle: #F4F6F9;
+  --border: #D9DFE7;
+  --border-strong: #B9C3CF;
+  --focus: #1E4E91;
+
+  /* Бренды 2.2 (светлая / тёмная тема) */
+  --brand-ecotech: #1E4E91;    --brand-ecotech-dark: #5CA8E6;
+  --brand-ecofilter: #0B6E8C;  --brand-ecofilter-dark: #6BD4E0;
+  --brand-ecomodule: #6B3410;  --brand-ecomodule-dark: #C4803A;
+  --brand-ecocycle: #0B7A55;   --brand-ecocycle-dark: #34C08A;
+
+  /* Акцент компонента — берётся только отсюда */
+  --accent: var(--brand-ecotech);
+  --on-accent: #FFFFFF;
+
+  /* Потоки (не зависят от бренда) */
+  --flow-water: #0B6E8C;
+  --flow-heat: #6B3410;
+  --flow-info: #1E4E91;
+
+  /* Статусы: нейтральны; цвет — только у «требует проверки» и «исключено» */
+  --status-neutral: #3E4C63;
+  --status-attention: #8A5A00;
+  --status-excluded: #A3261D;
+
+  /* Типографика */
+  --font-display: 'Manrope', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+
+  /* Шаг кегля ≈ √φ (1,272); два шага = φ. Межстрочные — кратно 4 px */
+  --fs-caption: 0.8125rem;  --lh-caption: 1.25rem;   /* 13 / 20 */
+  --fs-body-sm: 0.875rem;   --lh-body-sm: 1.25rem;   /* 14 / 20 */
+  --fs-body: 1rem;          --lh-body: 1.5rem;       /* 16 / 24 */
+  --fs-lead: 1.272rem;      --lh-lead: 2rem;         /* 20 / 32 */
+  --fs-h4: 1.272rem;        --lh-h4: 1.75rem;        /* 20 / 28 */
+  --fs-h3: 1.618rem;        --lh-h3: 2rem;           /* 26 / 32 */
+  --fs-h2: 2.058rem;        --lh-h2: 2.5rem;         /* 33 / 40 */
+  --fs-h1: 2.618rem;        --lh-h1: 3rem;           /* 42 / 48 */
+  --fs-display: 3.330rem;   --lh-display: 3.75rem;   /* 53 / 60 */
+  --fs-kpi: 2.058rem;       --lh-kpi: 2.5rem;
+  --fs-data: 0.875rem;      --lh-data: 1.25rem;
+
+  /* Отступы — ряд Фибоначчи */
+  --space-1: 1px; --space-2: 2px;
+  --space-3: 3px; --space-5: 5px; --space-8: 8px; --space-13: 13px;
+  --space-21: 21px; --space-34: 34px; --space-55: 55px; --space-89: 89px; --space-144: 144px;
+
+  --size-touch: 44px;
+  --size-control-lg: 48px;
+
+  /* Сетка: широкий экран по умолчанию */
+  --grid-max: 1440px;
+  --grid-margin: 89px;
+  --grid-gutter: 34px;
+  --grid-cols: 12;
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --shadow-1: 0 1px 3px rgba(14, 31, 61, .12);
+  --shadow-2: 0 8px 21px rgba(14, 31, 61, .16);
+  --transition: 150ms ease;
+}
+
+@media (max-width: 1439px) { :root { --grid-max: 1280px; --grid-margin: 55px; --grid-gutter: 21px; } }
+@media (max-width: 1023px) { :root { --grid-margin: 34px; --grid-gutter: 21px; --grid-cols: 8; } }
+@media (max-width: 599px)  {
+  :root {
+    --grid-margin: 21px; --grid-gutter: 13px; --grid-cols: 4;
+    --fs-display: 2.058rem; --lh-display: 2.5rem;
+    --fs-h1: 1.618rem; --lh-h1: 2rem;
+    --fs-h2: 1.618rem; --lh-h2: 2rem;
+    --fs-h3: 1.272rem; --lh-h3: 1.75rem;
+    --fs-kpi: 1.618rem; --lh-kpi: 2rem;
+  }
+}
+
+/* Бренд задаётся атрибутом data-brand */
+[data-brand="ecotech"]   { --accent: var(--brand-ecotech); }
+[data-brand="ecofilter"] { --accent: var(--brand-ecofilter); }
+[data-brand="ecomodule"] { --accent: var(--brand-ecomodule); }
+[data-brand="ecocycle"]  { --accent: var(--brand-ecocycle); }
+
+/* Тёмная тема — для тёмных разделов страницы */
+[data-theme="dark"] {
+  --ink: #F2F5F9;
+  --ink-muted: #C3CCD8;
+  --ink-subtle: #93A1B4;
+  --surface: #0D1A2A;
+  --surface-subtle: #13243A;
+  --border: #25384F;
+  --border-strong: #3A4F68;
+  --focus: #5CA8E6;
+  --on-accent: #0D1A2A;
+  --accent: var(--brand-ecotech-dark);
+  --status-neutral: #C3CCD8;
+  --status-attention: #E0B45A;
+  --status-excluded: #F08A80;
+}
+[data-theme="dark"][data-brand="ecotech"],   [data-theme="dark"] [data-brand="ecotech"]   { --accent: var(--brand-ecotech-dark); }
+[data-theme="dark"][data-brand="ecofilter"], [data-theme="dark"] [data-brand="ecofilter"] { --accent: var(--brand-ecofilter-dark); }
+[data-theme="dark"][data-brand="ecomodule"], [data-theme="dark"] [data-brand="ecomodule"] { --accent: var(--brand-ecomodule-dark); }
+[data-theme="dark"][data-brand="ecocycle"],  [data-theme="dark"] [data-brand="ecocycle"]  { --accent: var(--brand-ecocycle-dark); }
+
+/* Производные акцента пересчитываются там, где меняется бренд или тема */
+:root, [data-brand], [data-theme] {
+  --accent-soft: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  --accent-hover: color-mix(in srgb, var(--accent) 86%, #000);
+  --accent-active: color-mix(in srgb, var(--accent) 74%, #000);
+}
+[data-theme="dark"], [data-theme="dark"] [data-brand] {
+  --accent-hover: color-mix(in srgb, var(--accent) 84%, #fff);
+  --accent-active: color-mix(in srgb, var(--accent) 72%, #fff);
+}
