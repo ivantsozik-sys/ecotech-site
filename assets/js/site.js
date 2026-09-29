@@ -118,9 +118,21 @@
       var body = 'Имя: ' + name + '\nОрганизация: ' + form.org.value.trim() + '\nКонтакт: ' + contact + '\n\nЗадача:\n' + form.task.value.trim();
       var href = 'mailto:info@ecotechnew.ru?subject=' + encodeURIComponent('ЭКОТЕХ · ' + tl) + '&body=' + encodeURIComponent(body);
       var okEl = document.getElementById('form-ok');
-      okEl.textContent = 'Письмо подготовлено в вашем почтовом приложении. Если оно не открылось — напишите на info@ecotechnew.ru.';
-      okEl.classList.add('on');
+      okEl.textContent = 'Открываем письмо в вашей почтовой программе. Если оно не открылось, напишите на info@ecotechnew.ru или позвоните +7 916 278-87-84.';
       window.location.href = href;
+      okEl.classList.add('on');
+      
     });
   }
 })();
+(function(){var pages=[].slice.call(document.querySelectorAll('.page'));
+function go(){var h=(location.hash||'').slice(1),parts=h.split('.'),tok=parts[0]||'glavnaya',sub=parts[1];
+ var pg=pages.filter(function(p){return p.dataset.page===tok})[0];
+ if(!pg){ if(h&&document.getElementById(h))return; pg=pages[0];tok='glavnaya'}
+ pages.forEach(function(p){p.hidden=p!==pg}); document.title=pg.dataset.title;
+ document.querySelectorAll('.nav a,.mnav li a').forEach(function(a){var t=(a.getAttribute('href')||'').slice(1).split('.')[0];
+  var on=t===tok||(tok==='promyshlennost'||tok==='gosudarstvo'||tok==='investoram')&&t==='primenenie';if(on)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+ var m=document.getElementById('mnav');if(m&&m.classList.contains('on')){m.classList.remove('on');document.body.classList.remove('lock')}
+ if(tok==='kontakty'&&sub){var r=document.getElementById('t-'+sub);if(r)r.checked=true}
+ var el=sub&&pg.querySelector('[id="'+sub+'"]'); if(el)el.scrollIntoView(); else window.scrollTo(0,0);}
+addEventListener('hashchange',go);go();})();

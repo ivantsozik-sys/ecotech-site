@@ -1,3 +1,145 @@
+/* ЭКОТЕХ · сайт · OWNER REVIEW CANDIDATE
+   Все значения — из токенов DS 2.2.3 (tokens.css). Новых токенов нет; см. отчёт о токенах. */
+
+
+
+
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --surface:#0D1A2A;--surface-subtle:#122236;--surface-raised:#14263A;--surface-inverse:#E6EDF3;--ink:#E6EDF3;--ink-muted:#A7B3C2;--ink-subtle:#8D9AAB;--ink-inverse:#0D1A2A;--line:#2A3B50;--line-strong:#6A7B90;--focus:#6BD4E0;
+  --cyan-600:#6BD4E0;--cyan-soft:#11323D;--emerald-600:#34C08A;--emerald-soft:#0F3228;--brand-ecotech:#5CA8E6;--brand-ecotech-soft:#16304F;--brand-ecomodule:#C4803A;--brand-ecomodule-soft:#2B1E12;
+  --on-accent:#0D1A2A;--brand-ecotech-hover:#7DBBEE;--brand-ecotech-active:#9CCDF3;--status-warning:#F5B83C;--status-warning-soft:#33280F;--status-danger:#FF8A80;
+  --flow-heat:#FF8A5C;--flow-data:#5CA8E6;--flow-waste:#C9A27A;--flow-energy:#F5B83C;--flow-material:#A7B3C2;color-scheme:dark}}
+:root[data-theme="dark"]{color-scheme:dark}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:89px;background:var(--surface)}
+body{margin:0;background:var(--surface);color:var(--ink);font:400 16px/24px var(--font-sans);text-rendering:optimizeLegibility}
+img,svg{display:block;max-width:100%}
+a{color:inherit}
+h1,h2,h3,h4{font-family:var(--font-display);margin:0;color:var(--ink);text-wrap:balance}
+p{margin:0}
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+/* сетка */
+.wrap{width:100%;max-width:calc(var(--layout-container) + 2*var(--layout-margin));margin:0 auto;padding-inline:var(--layout-margin)}
+@media (min-width:1440px){.wrap{max-width:calc(var(--layout-container-xl) + 2*var(--layout-margin-xl));padding-inline:var(--layout-margin-xl)}}
+@media (max-width:1023px){.wrap{padding-inline:var(--layout-margin-tablet)}}
+@media (max-width:599px){.wrap{padding-inline:var(--layout-margin-mobile)}}
+
+/* типографика — стили DS */
+.t-display-xl{font:700 68px/72px var(--font-display);letter-spacing:-.02em}
+.t-display{font:700 54px/56px var(--font-display);letter-spacing:-.02em}
+.t-h1{font:700 42px/48px var(--font-display);letter-spacing:-.015em}
+.t-h2{font:600 33px/40px var(--font-display);letter-spacing:-.01em}
+.t-h3{font:600 26px/32px var(--font-display)}
+.t-h4{font:600 20px/28px var(--font-display)}
+.t-lead{font:400 20px/32px var(--font-sans);color:var(--ink-muted)}
+.t-body{font:400 16px/24px var(--font-sans);color:var(--ink-muted)}
+.t-small{font:400 14px/20px var(--font-sans);color:var(--ink-muted)}
+.t-caption{font:500 13px/20px var(--font-sans);color:var(--ink-subtle)}
+.t-overline{font:600 12px/16px var(--font-sans);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-subtle)}
+.t-mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+@media (max-width:1023px){.t-display-xl{font-size:54px;line-height:56px}.t-display{font-size:42px;line-height:48px}}
+@media (max-width:599px){.t-display-xl{font-size:42px;line-height:48px;letter-spacing:-.015em}.t-display{font-size:33px;line-height:40px}.t-h1{font-size:33px;line-height:40px}.t-h2{font-size:26px;line-height:32px}.t-lead{font-size:18px;line-height:28px}}
+
+/* пропуск к содержанию */
+.skip{position:absolute;left:var(--space-13);top:-100px;z-index:100;background:var(--ink);color:var(--surface);padding:var(--space-8) var(--space-13);font:600 14px/20px var(--font-sans);text-decoration:none}
+.skip:focus{top:var(--space-13)}
+
+/* кнопки — DS Button; текст кнопки без прописных (правило DS) */
+.btn{display:inline-flex;align-items:center;gap:var(--space-8);height:var(--size-control-lg);padding:0 var(--space-21);border:var(--stroke-control) solid transparent;border-radius:var(--radius-md);font:600 15px/20px var(--font-sans);text-decoration:none;white-space:nowrap;cursor:pointer;transition:background-color var(--motion-color),border-color var(--motion-color),color var(--motion-color)}
+.btn--primary{background:var(--accent);color:var(--on-accent)}
+.btn--primary:hover{background:var(--accent-hover)}
+.btn--secondary{background:transparent;color:var(--ink);border-color:var(--line-strong)}
+.btn--secondary:hover{border-color:var(--ink)}
+.btn--sm{height:var(--size-control);padding:0 var(--space-13);font-size:14px}
+.btn svg{width:18px;height:18px}
+.link{display:inline-flex;align-items:center;gap:var(--space-5);font:600 15px/24px var(--font-sans);color:var(--accent);text-decoration:none;min-height:var(--size-touch)}
+.link:hover span{text-decoration:underline;text-underline-offset:3px}
+.link svg{width:16px;height:16px;transition:transform var(--motion-color)}
+.link:hover svg{transform:translateX(3px)}
+
+/* шапка */
+.hdr{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:var(--surface);border-bottom:1px solid transparent;transition:border-color var(--motion-color)}
+.hdr.is-scrolled{border-bottom-color:var(--line)}
+.hdr__in{display:flex;align-items:center;gap:var(--space-34);height:80px;transition:height var(--motion-layout)}
+.hdr.is-scrolled .hdr__in{height:64px}
+.logo{display:block;flex:none;line-height:0}
+.logo img{height:40px;width:auto}
+.logo .l-d{display:none}
+:root[data-theme="dark"] .logo .l-l{display:none}:root[data-theme="dark"] .logo .l-d{display:block}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .logo .l-l{display:none}:root:not([data-theme="light"]) .logo .l-d{display:block}}
+.nav{display:flex;gap:var(--space-21);list-style:none;margin:0 0 0 auto;padding:0}
+.nav a{display:flex;align-items:center;min-height:var(--size-touch);font:500 15px/20px var(--font-sans);color:var(--ink-muted);text-decoration:none;border-bottom:2px solid transparent}
+.nav a:hover{color:var(--ink)}
+.nav a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--accent)}
+.hdr__act{display:flex;align-items:center;gap:var(--space-8)}
+.icon-btn{display:inline-grid;place-items:center;width:var(--size-touch);height:var(--size-touch);border:0;background:transparent;color:var(--ink-muted);border-radius:var(--radius-md);cursor:pointer}
+.icon-btn:hover{color:var(--ink);background:var(--surface-subtle)}
+.icon-btn svg{width:20px;height:20px}
+.menu-btn{display:none}
+@media (max-width:1180px){.nav{display:none}.menu-btn{display:inline-grid}.hdr__act{margin-left:auto}}
+@media (max-width:599px){.hdr__in{height:64px;gap:var(--space-13)}.logo img{height:32px}.hdr__cta{display:none}}
+
+/* секции */
+.sec{padding-block:var(--space-144)}
+.sec--tight{padding-block:var(--space-89)}
+.sec + .sec{border-top:1px solid var(--line)}
+.sec--dark{background:#0D1A2A;border-top:0!important}
+@media (max-width:599px){.sec{padding-block:var(--space-89)}.sec--tight{padding-block:var(--space-55)}}
+.sh{display:grid;grid-template-columns:minmax(0,var(--layout-phi-3)) minmax(0,1fr);gap:var(--space-34);margin-bottom:var(--space-89)}
+.sh__n{font:500 14px/24px var(--font-mono);color:var(--ink-subtle);padding-top:var(--space-8);border-top:1px solid var(--ink)}
+.sh__t{max-width:28ch}
+.sh__lead{margin-top:var(--space-21);max-width:62ch}
+@media (max-width:1023px){.sh{grid-template-columns:1fr;gap:var(--space-21);margin-bottom:var(--space-55)}.sh__n{border-top:0;padding-top:0}}
+
+/* статусы доказательности — DS EvidenceBadge, независимы от бренда */
+.ev{display:inline-flex;align-items:center;gap:var(--space-3);height:21px;padding:0 var(--space-5);border-radius:var(--radius-sm);font:600 11px/1 var(--font-sans);letter-spacing:.04em;border:1px solid transparent;white-space:nowrap;color:var(--ink);vertical-align:middle}
+.ev svg{width:12px;height:12px}
+.ev--measured{background:var(--ink);color:var(--surface)}
+.ev--calculated{background:var(--surface);border:1.5px solid var(--ink)}
+.ev--estimated{background:var(--surface-subtle);border-color:var(--ink-muted);color:var(--ink-muted)}
+.ev--target{background:transparent;border:1px dashed var(--ink-muted)}
+.ev--assumption{background:transparent;border:1.5px dotted var(--ink-subtle);color:var(--ink-muted);font-style:italic}
+.ev--requires{background:var(--status-warning-soft);border-color:var(--status-warning);color:var(--status-warning)}
+.ev--historic{background:var(--surface-subtle);color:var(--ink-subtle)}
+.ev--excluded{color:var(--status-danger);border-color:var(--status-danger)}
+.ev--excluded span{text-decoration:line-through}
+
+/* подвал */
+.ftr{background:#0D1A2A;color:#E6EDF3;padding-block:var(--space-89) var(--space-34)}
+.ftr a{color:#E6EDF3;text-decoration:none}
+.ftr a:hover{text-decoration:underline;text-underline-offset:3px}
+.ftr__top{display:grid;grid-template-columns:minmax(0,var(--layout-phi-minor)) minmax(0,1fr);gap:var(--space-55);padding-bottom:var(--space-55);border-bottom:1px solid #2A3B50}
+.ftr__logo img{height:56px;width:auto}
+.ftr__claim{margin-top:var(--space-21);font:400 16px/24px var(--font-sans);color:#A7B3C2;max-width:36ch}
+.ftr__cols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-34)}
+.ftr__h{font:600 12px/16px var(--font-sans);letter-spacing:.08em;text-transform:uppercase;color:#8D9AAB;margin-bottom:var(--space-13)}
+.ftr ul{list-style:none;margin:0;padding:0}
+.ftr li a{display:inline-flex;min-height:36px;align-items:center;font:400 15px/20px var(--font-sans)}
+.ftr__bot{display:flex;justify-content:space-between;gap:var(--space-21);flex-wrap:wrap;padding-top:var(--space-21);font:400 13px/20px var(--font-sans);color:#8D9AAB}
+@media (max-width:1023px){.ftr__top{grid-template-columns:1fr}.ftr__cols{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+/* Схема потоков главной: вход → преобразование → выход. Цвета потоков — токены flow-*, бренд — только у продуктов */
+.flow{display:grid;grid-template-columns:minmax(0,1fr) 34px minmax(0,1.35fr) 34px minmax(0,1fr);align-items:stretch;gap:0;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--surface-raised);padding:var(--space-34)}
+.flow__col{display:flex;flex-direction:column;gap:var(--space-13)}
+.flow__h{font:600 12px/16px var(--font-sans);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-subtle);margin-bottom:var(--space-5)}
+.flow__item{display:flex;align-items:flex-start;gap:var(--space-8);font:500 15px/20px var(--font-sans);color:var(--ink)}
+.flow__item small{display:block;font:400 13px/18px var(--font-sans);color:var(--ink-subtle);margin-top:2px}
+.flow__dot{flex:none;width:10px;height:10px;border-radius:50%;margin-top:5px;background:var(--c,var(--flow-material))}
+.flow__item .ev{margin-left:auto;flex:none}
+.flow__arrow{display:flex;align-items:center;justify-content:center;color:var(--line-strong)}
+.flow__arrow svg{width:22px;height:22px}
+.flow__core{position:relative;display:flex;flex-direction:column;gap:var(--space-13);border:1.5px dashed var(--brand-ecocycle);border-radius:var(--radius-lg);padding:var(--space-21) var(--space-21) var(--space-13)}
+.flow__core-lbl{position:absolute;top:-11px;left:var(--space-13);background:var(--surface-raised);padding:0 var(--space-5);font:600 12px/20px var(--font-sans);letter-spacing:.06em;text-transform:uppercase;color:var(--brand-ecocycle)}
+.flow__node{border:1px solid var(--line);border-top:3px solid var(--b);border-radius:var(--radius-md);padding:var(--space-13) var(--space-13);background:var(--surface)}
+.flow__node b{display:block;font:700 18px/24px var(--font-display);color:var(--ink)}
+.flow__node span{display:block;font:400 14px/20px var(--font-sans);color:var(--ink-muted);margin-top:2px}
+.flow__ctl{font:500 13px/18px var(--font-sans);color:var(--ink-subtle);display:flex;gap:var(--space-8);align-items:center}
+.flow__sep{height:1px;background:var(--line);margin:var(--space-5) 0}
+@media (max-width:1023px){.flow{grid-template-columns:1fr;padding:var(--space-21)}.flow__arrow{height:34px}.flow__arrow svg{transform:rotate(90deg)}}
 /* ЭКОТЕХ RC3 · компоненты страниц. Только токены DS 2.2.3; новых цветов нет */
 .review{background:var(--status-warning-soft);color:var(--ink);font:500 13px/20px var(--font-sans);text-align:center;padding:var(--space-5) var(--space-13);border-bottom:1px solid var(--line)}
 .review b{color:var(--status-warning);font-weight:700}
@@ -333,3 +475,36 @@ body.lock{overflow:hidden}
 .cgroup__err{display:none;font:500 13px/18px var(--font-sans);color:var(--status-danger);margin-top:var(--space-8)}
 .cgroup[data-err] .cgroup__err{display:block}
 .cgroup .hint{font:400 13px/18px var(--font-sans);color:var(--ink-subtle);margin:0 0 var(--space-8)}
+
+html{scroll-padding-top:89px}body{background:var(--surface)}
+
+/* Бывшие встроенные атрибуты style (CSP запрещает style="…"). Сгенерировано при переносе 27.09.2026. */
+.u1{height:32px !important;width:auto !important}
+.u2{margin-top:21px !important}
+.u3{margin-top:8px !important}
+.u4{margin-top:34px !important}
+.u5{margin-top:13px !important;max-width:22ch !important}
+.u6{--c:var(--flow-water) !important}
+.u7{--c:var(--flow-waste) !important}
+.u8{--c:var(--flow-electric) !important}
+.u9{--b:var(--brand-ecofilter) !important}
+.u10{--b:var(--brand-ecomodule) !important}
+.u11{--c:var(--flow-data) !important;margin:0 !important}
+.u12{--c:var(--flow-heat) !important}
+.u13{--c:var(--flow-data) !important}
+.u14{color:var(--ink-muted) !important}
+.u15{--c:var(--flow-gas) !important}
+.u16{margin-top:13px !important}
+.u17{margin-top:21px !important;max-width:80ch !important}
+.u18{margin-top:55px !important}
+.u19{margin-top:21px !important;max-width:72ch !important}
+.u20{grid-column:1/-1 !important}
+.u21{aspect-ratio:16/7 !important;width:100% !important;height:auto !important;object-fit:cover !important}
+.u22{align-items:center !important}
+.u23{background:var(--ink) !important;color:var(--surface) !important;border-color:var(--ink) !important}
+.u24{margin-top:8px !important;max-width:72ch !important}
+.u25{margin-top:8px !important;max-width:80ch !important}
+.u26{margin-top:34px !important;max-width:72ch !important}
+.u27{color:var(--ink) !important}
+.u28{font:400 15px/22px var(--font-sans) !important;color:var(--ink-muted) !important}
+.e404-gap{margin-top:var(--space-34)}
