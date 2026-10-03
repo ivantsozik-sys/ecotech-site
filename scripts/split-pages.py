@@ -93,6 +93,8 @@ def add_lang(markup):
     return markup
 
 def add_lang_footer(markup):
+    markup = markup.replace('<li><a href="#proekty.voprosy">Вопросы и ответы</a></li>',
+                            '<li><a href="#proekty.voprosy">Вопросы и ответы</a></li><li><a href="/stati/">Статьи</a></li>', 1)
     return re.sub(r'(<span>Версия [^<]*</span>)', FTR_LANG + r'\1', markup, count=1)
 
 def lead(sec):
@@ -144,7 +146,8 @@ for p in pages:
 
 # 404: ссылки шапки не трогаем (там только "/")
 # карта сайта
-items = ''.join(f'<url><loc>{BASE}{u}</loc><lastmod>{TODAY}</lastmod></url>' for u, _, _ in report)
+EXTRA = ['/stati/', '/stati/zhelezo-v-vode-iz-skvazhiny/']  # раздел «Статьи» (04.10.2026)
+items = ''.join(f'<url><loc>{BASE}{u}</loc><lastmod>{TODAY}</lastmod></url>' for u in [r[0] for r in report] + EXTRA)
 open(os.path.join(OUT, 'sitemap.xml'), 'w', encoding='utf-8').write(
     '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + items + '</urlset>\n')
 
@@ -170,7 +173,13 @@ css += ("\n/* Ссылки на международную версию (04.10.2
         "@media (max-width:1023px){.hdr__lang{display:none}}\n"
         ".mnav__lang{margin-top:var(--space-21);font:400 14px/22px var(--font-sans);color:var(--ink-muted)}\n"
         ".mnav__lang a{color:var(--ink)}\n"
-        ".ftr__lang a{color:#A7B3C2;text-decoration:underline;text-underline-offset:3px}\n")
+        ".ftr__lang a{color:#A7B3C2;text-decoration:underline;text-underline-offset:3px}\n"
+        "/* Раздел «Статьи» (04.10.2026) */\n"
+        ".stati-list{list-style:none;margin:0;padding:0}\n"
+        ".stati-list h2 a{color:var(--ink);text-decoration:none}\n"
+        ".stati-list h2 a:hover{color:var(--accent);text-decoration:underline;text-underline-offset:3px}\n"
+        ".legal__sec .dt-wrap{margin-top:var(--space-21);margin-bottom:var(--space-21)}\n"
+        ".legal__sec a.btn--primary{color:var(--on-accent);text-decoration:none}\n")
 os.makedirs(os.path.join(OUT, 'assets/css'), exist_ok=True)
 open(os.path.join(OUT, 'assets/css/site.css'), 'w', encoding='utf-8').write(css)
 

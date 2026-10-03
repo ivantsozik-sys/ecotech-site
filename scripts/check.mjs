@@ -7,9 +7,14 @@ import { join, dirname } from 'node:path';
 
 const root = new URL('..', import.meta.url).pathname;
 const skipDirs = new Set(['global', 'assets', 'scripts', '.github', '.git', 'node_modules', 'dist', 'out']);
-const sections = readdirSync(root).filter((d) => !skipDirs.has(d) && !d.startsWith('.') &&
-  statSync(join(root, d)).isDirectory() && existsSync(join(root, d, 'index.html')));
-const pages = ['index.html', '404.html', ...sections.map((d) => `${d}/index.html`)];
+// разделы /раздел/ и вложенные страницы /раздел/<страница>/ (например, /stati/<статья>/)
+const walk = (dir, depth) => readdirSync(join(root, dir)).flatMap((d) => {
+  const rel = dir ? `${dir}/${d}` : d;
+  if ((!dir && skipDirs.has(d)) || d.startsWith('.') || !statSync(join(root, rel)).isDirectory()) return [];
+  const own = existsSync(join(root, rel, 'index.html')) ? [`${rel}/index.html`] : [];
+  return depth < 2 ? [...own, ...walk(rel, depth + 1)] : own;
+});
+const pages = ['index.html', '404.html', ...walk('', 0)];
 const css = ['assets/css/fonts.css', 'assets/css/tokens.css', 'assets/css/site.css'];
 const required = ['robots.txt', 'sitemap.xml', 'favicon.ico', '.htaccess', 'assets/js/site.js', 'assets/js/theme.js'];
 const errors = [];
