@@ -5,7 +5,8 @@
 #   3) задание по расписанию на Джино раз в 5 минут запускает jino-pull.sh и копирует site/ в каталог сайта.
 # Зарубежный доступ к хостингу не нужен: соединение идёт с Джино на GitHub.
 #
-# Резервная выгрузка по SFTP (порт 2222) — только вручную: Actions → «Деплой на Джино» → Run workflow.
+# Резервная выгрузка по SFTP (порт 2222) — только вручную и только по галочке: Actions → «Деплой на Джино» → Run workflow → «Резервная выгрузка по SFTP».
+# Обычный ручной запуск (без галочки) повторяет только основную схему (03.10.2026: SFTP-шаг при каждом ручном запуске — ИСТОРИЧЕСКОЕ, порт 2222 с GitHub — таймаут).
 # ИСТОРИЧЕСКОЕ: FTP (порт 21) с серверов GitHub недоступен; SFTP проходит не всегда (таймауты, 27.09.2026).
 # Секреты для резервной выгрузки: FTP_SERVER, FTP_USERNAME, FTP_PASSWORD; переменные FTP_SERVER_DIR, FTP_PORT.
 
@@ -15,6 +16,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      sftp:
+        description: 'Резервная выгрузка по SFTP (порт 2222; с GitHub обычно недоступен)'
+        type: boolean
+        default: false
 
 concurrency:
   group: deploy-jino
@@ -70,7 +76,7 @@ jobs:
   sftp:
     name: Резервная выгрузка по SFTP
     needs: check
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' && inputs.sftp
     runs-on: ubuntu-latest
     environment:
       name: production
