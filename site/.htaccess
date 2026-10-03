@@ -1,0 +1,59 @@
+# ЭКОТЕХ — настройки Apache для хостинга Джино (сайт v1.1 от 29.09.2026)
+AddDefaultCharset UTF-8
+DirectoryIndex index.html
+ErrorDocument 404 /404.html
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # HTTP → HTTPS (27.09.2026). На Джино протокол приходит в заголовке X-Forwarded-Protocol.
+  # Условие «=http»: если заголовка нет, перенаправления нет — цикл исключён.
+  RewriteCond %{HTTP:X-Forwarded-Protocol} =http
+  RewriteRule ^ https://ecotechnew.ru%{REQUEST_URI} [R=301,L]
+
+  # www → без www
+  RewriteCond %{HTTP_HOST} ^www\.ecotechnew\.ru$ [NC]
+  RewriteRule ^ https://ecotechnew.ru%{REQUEST_URI} [R=301,L]
+
+  # Многостраничный сайт (04.10.2026): каждый раздел — отдельный адрес /раздел/.
+  # Перенаправления разделов на #раздел (29.09.2026) — ИСТОРИЧЕСКОЕ, удалены.
+  # Старые адреса v1.0 /primenenie/<аудитория>/ → /<аудитория>/
+  RewriteRule ^primenenie/(promyshlennost|gosudarstvo|investoram)/?$ https://ecotechnew.ru/$1/ [R=301,L]
+</IfModule>
+
+<IfModule mod_mime.c>
+  AddType font/woff2 .woff2
+  AddType image/svg+xml .svg
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript text/javascript image/svg+xml application/xml text/plain application/ld+json
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 1 hour"
+  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType text/css "access plus 1 day"
+  ExpiresByType application/javascript "access plus 1 day"
+  ExpiresByType image/svg+xml "access plus 30 days"
+  ExpiresByType image/jpeg "access plus 30 days"
+  ExpiresByType image/png "access plus 30 days"
+  ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
+
+<IfModule mod_setenvif.c>
+  SetEnvIf X-Forwarded-Protocol "^(.*)$" XFP=$1
+</IfModule>
+
+<IfModule mod_headers.c>
+  # Диагностика перенаправления на HTTPS: какой протокол сообщил Джино
+  Header always set X-Ecotech-Proto "%{XFP}e"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  # Сайт v1.0: встроенные атрибуты style и один встроенный скрипт темы (разрешён по хешу)
+  Header always set Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self' 'sha256-cXByWrxTx8+NUqqZLUJzjsmsa6BKztH978WiVpUYPcs='; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'self'"
+</IfModule>
