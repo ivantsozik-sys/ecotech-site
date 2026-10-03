@@ -16,9 +16,10 @@ Options -Indexes
   RewriteCond %{HTTP_HOST} ^www\.ecotechnew\.ru$ [NC]
   RewriteRule ^ https://ecotechnew.ru%{REQUEST_URI} [R=301,L]
 
-  # Страницы многостраничного сайта v1.0 → разделы одностраничного v1.1 (29.09.2026)
-  RewriteRule ^primenenie/(promyshlennost|gosudarstvo|investoram)/?$ https://ecotechnew.ru/#$1 [R=301,NE,L]
-  RewriteRule ^(platforma|ekofiltr|ekomodul|ekocikl|dokazatelstva|proekty|primenenie|kontakty|o-kompanii|politika|soglasie)/?$ https://ecotechnew.ru/#$1 [R=301,NE,L]
+  # Многостраничный сайт (04.10.2026): каждый раздел — отдельный адрес /раздел/.
+  # Перенаправления разделов на #раздел (29.09.2026) — ИСТОРИЧЕСКОЕ, удалены.
+  # Старые адреса v1.0 /primenenie/<аудитория>/ → /<аудитория>/
+  RewriteRule ^primenenie/(promyshlennost|gosudarstvo|investoram)/?$ https://ecotechnew.ru/$1/ [R=301,L]
 </IfModule>
 
 <IfModule mod_mime.c>
