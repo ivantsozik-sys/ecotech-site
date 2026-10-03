@@ -125,14 +125,9 @@
     });
   }
 })();
-(function(){var pages=[].slice.call(document.querySelectorAll('.page'));
-function go(){var h=(location.hash||'').slice(1),parts=h.split('.'),tok=parts[0]||'glavnaya',sub=parts[1];
- var pg=pages.filter(function(p){return p.dataset.page===tok})[0];
- if(!pg){ if(h&&document.getElementById(h))return; pg=pages[0];tok='glavnaya'}
- pages.forEach(function(p){p.hidden=p!==pg}); document.title=pg.dataset.title;
- document.querySelectorAll('.nav a,.mnav li a').forEach(function(a){var t=(a.getAttribute('href')||'').slice(1).split('.')[0];
-  var on=t===tok||(tok==='promyshlennost'||tok==='gosudarstvo'||tok==='investoram')&&t==='primenenie';if(on)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
- var m=document.getElementById('mnav');if(m&&m.classList.contains('on')){m.classList.remove('on');document.body.classList.remove('lock')}
- if(tok==='kontakty'&&sub){var r=document.getElementById('t-'+sub);if(r)r.checked=true}
- var el=sub&&pg.querySelector('[id="'+sub+'"]'); if(el)el.scrollIntoView(); else window.scrollTo(0,0);}
-addEventListener('hashchange',go);go();})();
+(function(){var P=["platforma", "ekofiltr", "ekomodul", "ekocikl", "o-kompanii", "dokazatelstva", "proekty", "primenenie", "promyshlennost", "gosudarstvo", "investoram", "kontakty", "politika", "soglasie"];
+ var h=(location.hash||'').slice(1);if(!h)return;var p=h.split('.'),t=p[0],sub=p[1];
+ if(location.pathname==='/'&&P.indexOf(t)>-1){location.replace('/'+t+'/'+(sub?'#'+sub:''));return}
+ if(location.pathname==='/'&&t==='glavnaya'){history.replaceState(null,'','/');window.scrollTo(0,0);return}
+ var r=document.getElementById('t-'+(sub||t));if(r)r.checked=true;
+ if(sub){var el=document.getElementById(sub);if(el)el.scrollIntoView()}})();
