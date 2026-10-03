@@ -519,3 +519,9 @@ html{scroll-padding-top:89px}body{background:var(--surface)}
 .mnav__lang{margin-top:var(--space-21);font:400 14px/22px var(--font-sans);color:var(--ink-muted)}
 .mnav__lang a{color:var(--ink)}
 .ftr__lang a{color:#A7B3C2;text-decoration:underline;text-underline-offset:3px}
+/* Раздел «Статьи» (04.10.2026) */
+.stati-list{list-style:none;margin:0;padding:0}
+.stati-list h2 a{color:var(--ink);text-decoration:none}
+.stati-list h2 a:hover{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.legal__sec .dt-wrap{margin-top:var(--space-21);margin-bottom:var(--space-21)}
+.legal__sec a.btn--primary{color:var(--on-accent);text-decoration:none}
