@@ -146,7 +146,7 @@ for p in pages:
 
 # 404: ссылки шапки не трогаем (там только "/")
 # карта сайта
-EXTRA = ['/stati/', '/stati/zhelezo-v-vode-iz-skvazhiny/']  # раздел «Статьи» (04.10.2026)
+EXTRA = ['/stati/', '/stati/zhelezo-v-vode-iz-skvazhiny/', '/stati/doochistka-stochnyh-vod-pokazateli/']  # раздел «Статьи» (04.10.2026)
 items = ''.join(f'<url><loc>{BASE}{u}</loc><lastmod>{TODAY}</lastmod></url>' for u in [r[0] for r in report] + EXTRA)
 open(os.path.join(OUT, 'sitemap.xml'), 'w', encoding='utf-8').write(
     '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + items + '</urlset>\n')
