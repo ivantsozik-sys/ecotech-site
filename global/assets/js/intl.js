@@ -86,6 +86,13 @@
   var form = d.getElementById('form');
   if (form) {
     if (form.elements.ts) form.elements.ts.value = String(Date.now());
+    /* источник перехода из меток ссылки (utm_*) — без cookie, только в составе заявки */
+    try {
+      var q = new URLSearchParams(location.search), src = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content']
+        .map(function (k) { var v = q.get(k); return v ? k.replace('utm_', '') + '=' + v.replace(/[^\w.\-]/g, '').slice(0, 60) : ''; })
+        .filter(Boolean).join('; ');
+      if (src && form.elements.src) form.elements.src.value = src;
+    } catch (e) {}
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var f = form.elements, err = d.getElementById('form-err'), okEl = d.getElementById('form-ok');
