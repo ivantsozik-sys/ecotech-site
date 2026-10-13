@@ -117,7 +117,7 @@
       fetch(form.getAttribute('action'), { method: 'POST', body: new FormData(form), headers: { 'Accept': 'application/json' } })
         .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
         .then(function (j) {
-          if (j && j.ok) { okEl.textContent = form.getAttribute('data-ok'); form.classList.add('is-sent'); okEl.focus && okEl.setAttribute('tabindex', '-1'); okEl.focus(); }
+          if (j && j.ok) { try { d.dispatchEvent(new CustomEvent('ecotech:lead')); } catch (e3) {} okEl.textContent = form.getAttribute('data-ok'); form.classList.add('is-sent'); okEl.focus && okEl.setAttribute('tabindex', '-1'); okEl.focus(); }
           else { okEl.hidden = true; fail(); }
         })
         .catch(function () { okEl.hidden = true; fail(); });

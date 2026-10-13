@@ -59,5 +59,6 @@ Options -Indexes
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
   # Сайт v1.0: встроенные атрибуты style и один встроенный скрипт темы (разрешён по хешу)
-  Header always set Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self' 'sha256-cXByWrxTx8+NUqqZLUJzjsmsa6BKztH978WiVpUYPcs='; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'self'"
+  # 14.10.2026 (решение владельца): разрешены домены Яндекс Метрики; счётчик грузится только после согласия посетителя
+  Header always set Content-Security-Policy "default-src 'self'; img-src 'self' data: https://mc.yandex.ru https://mc.yandex.com; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self' 'sha256-cXByWrxTx8+NUqqZLUJzjsmsa6BKztH978WiVpUYPcs=' https://mc.yandex.ru https://yastatic.net; connect-src 'self' https://mc.yandex.ru https://mc.yandex.com; frame-src https://mc.yandex.ru https://mc.yandex.com; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'self'"
 </IfModule>
