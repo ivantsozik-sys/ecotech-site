@@ -91,6 +91,8 @@
       var q = new URLSearchParams(location.search), src = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content']
         .map(function (k) { var v = q.get(k); return v ? k.replace('utm_', '') + '=' + v.replace(/[^\w.\-]/g, '').slice(0, 60) : ''; })
         .filter(Boolean).join('; ');
+      /* метка могла прийти на статью основного сайта — хранится только до закрытия вкладки (sessionStorage), не cookie */
+      try { if (src) sessionStorage.setItem('ecotech_src', src); else src = sessionStorage.getItem('ecotech_src') || ''; } catch (e2) {}
       if (src && form.elements.src) form.elements.src.value = src;
     } catch (e) {}
     form.addEventListener('submit', function (e) {

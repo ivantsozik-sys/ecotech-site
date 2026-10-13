@@ -131,3 +131,5 @@
  if(location.pathname==='/'&&t==='glavnaya'){history.replaceState(null,'','/');window.scrollTo(0,0);return}
  var r=document.getElementById('t-'+(sub||t));if(r)r.checked=true;
  if(sub){var el=document.getElementById(sub);if(el)el.scrollIntoView()}})();
+/* источник перехода (utm_*) для заявки на международной версии — только sessionStorage до закрытия вкладки, без cookie (14.10.2026) */
+(function(){try{var q=new URLSearchParams(location.search),s=['utm_source','utm_medium','utm_campaign','utm_content'].map(function(k){var v=q.get(k);return v?k.replace('utm_','')+'='+v.replace(/[^\w.\-]/g,'').slice(0,60):''}).filter(Boolean).join('; ');if(s)sessionStorage.setItem('ecotech_src',s+'; page='+location.pathname.replace(/[^\w\/\-]/g,'').slice(0,80))}catch(e){}})();

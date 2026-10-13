@@ -39,7 +39,7 @@ if ($ts > 0 && (time() - intdiv($ts, 1000)) < 3) done(false, 'too fast', 429);
 
 $name = field('name', 200); $org = field('org', 300); $contact = field('contact', 200);
 $task = field('task', 5000); $topic = field('topic', 200); $source = field('source', 200);
-$flow = field('flow', 100); $src = preg_replace('/[^\w.=; \-]/u', '', field('src', 300)) ?? ''; $lang = preg_replace('/[^a-z]/', '', field('lang', 5)) ?: 'ru';
+$flow = field('flow', 100); $src = preg_replace('/[^\w.=;\/ \-]/u', '', field('src', 300)) ?? ''; $lang = preg_replace('/[^a-z]/', '', field('lang', 5)) ?: 'ru';
 if ($name === '' || $contact === '' || $task === '' || empty($_POST['consent'])) done(false, 'required fields', 400);
 
 $body = "Новая заявка с сайта ecotechnew.ru/global/{$lang}/\n\n"
