@@ -82,17 +82,38 @@
     });
   });
 
-  /* ---------- форма: письмо в почтовом приложении ---------- */
+  /* ---------- форма: отправка заявки на сервер (send.php); запасной путь — письмо в почтовом приложении ---------- */
   var form = d.getElementById('form');
-  if (form) form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    var f = form.elements, err = d.getElementById('form-err');
-    var ok = f.name.value.trim() && f.contact.value.trim() && f.task.value.trim() && f.consent.checked;
-    if (!ok) { err.textContent = form.getAttribute('data-err'); err.hidden = false; return; }
-    err.hidden = true;
-    var body = [f.name.value, f.org.value, f.contact.value, '', (f.source ? f.source.value + ' · ' : '') + f.topic.value, '', f.task.value, '', '— ' + location.href].join('\n');
-    location.href = 'mailto:' + form.getAttribute('data-to') + '?subject=' + encodeURIComponent('ECOTECH · ' + (f.source ? f.source.value + ' · ' : '') + f.topic.value) + '&body=' + encodeURIComponent(body);
-  });
+  if (form) {
+    if (form.elements.ts) form.elements.ts.value = String(Date.now());
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var f = form.elements, err = d.getElementById('form-err'), okEl = d.getElementById('form-ok');
+      var btn = form.querySelector('button[type=submit]');
+      var ok = f.name.value.trim() && f.contact.value.trim() && f.task.value.trim() && f.consent.checked;
+      if (!ok) { err.textContent = form.getAttribute('data-err'); err.hidden = false; return; }
+      err.hidden = true;
+      function mailto() {
+        var body = [f.name.value, f.org.value, f.contact.value, '', (f.source ? f.source.value + ' · ' : '') + f.topic.value, (f.flow && f.flow.value ? 'Q = ' + f.flow.value + ' m3/h' : ''), '', f.task.value, '', '— ' + location.href].join('\n');
+        return 'mailto:' + form.getAttribute('data-to') + '?subject=' + encodeURIComponent('ECOTECH · ' + (f.source ? f.source.value + ' · ' : '') + f.topic.value) + '&body=' + encodeURIComponent(body);
+      }
+      function fail() {
+        err.textContent = form.getAttribute('data-fail'); err.hidden = false;
+        var a = d.createElement('a'); a.href = mailto(); a.textContent = ' → ' + form.getAttribute('data-to'); err.appendChild(a);
+        if (btn) { btn.disabled = false; }
+      }
+      if (!w.fetch || !w.FormData) { location.href = mailto(); return; }
+      if (btn) { btn.disabled = true; }
+      okEl.textContent = form.getAttribute('data-sending'); okEl.hidden = false;
+      fetch(form.getAttribute('action'), { method: 'POST', body: new FormData(form), headers: { 'Accept': 'application/json' } })
+        .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
+        .then(function (j) {
+          if (j && j.ok) { okEl.textContent = form.getAttribute('data-ok'); form.classList.add('is-sent'); okEl.focus && okEl.setAttribute('tabindex', '-1'); okEl.focus(); }
+          else { okEl.hidden = true; fail(); }
+        })
+        .catch(function () { okEl.hidden = true; fail(); });
+    });
+  }
 
   /* ---------- живой фон первого экрана: потоки воды, тепла и данных ---------- */
   var hero = d.querySelector('.hero-bg');

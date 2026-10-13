@@ -544,3 +544,13 @@ html[dir="rtl"] .stat-v{line-height:1.2;letter-spacing:0}
  body{padding-block-end:66px}
 }
 @media print{.mbar{display:none}}
+/* 1.2: форма с отправкой, форматы работы */
+.hp{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+.aud--3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:899px){.aud--3{grid-template-columns:minmax(0,1fr)}}
+.form-ok{padding:14px 16px;border-radius:var(--radius-md);background:rgba(107,212,224,.14);color:var(--water);font-weight:600}
+.fld input[type=file]{padding:10px 0;height:auto;border:0;background:transparent;color:inherit;font:inherit}
+.form.is-sent .fld,.form.is-sent .chk,.form.is-sent button{display:none}
+.docline + .cta-row,.next + .cta-row{margin-block-start:21px}
+@media (max-width:599px){.cta-row .btn{white-space:normal;height:auto;min-height:54px;padding-block:12px;text-align:center;max-width:100%}}
+.fld input[type=file]{max-width:100%}
