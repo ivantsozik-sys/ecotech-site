@@ -90,8 +90,8 @@
     var ok = f.name.value.trim() && f.contact.value.trim() && f.task.value.trim() && f.consent.checked;
     if (!ok) { err.textContent = form.getAttribute('data-err'); err.hidden = false; return; }
     err.hidden = true;
-    var body = [f.name.value, f.org.value, f.contact.value, '', f.task.value, '', '— ' + location.href].join('\n');
-    location.href = 'mailto:' + form.getAttribute('data-to') + '?subject=' + encodeURIComponent('ECOTECH · ' + f.topic.value) + '&body=' + encodeURIComponent(body);
+    var body = [f.name.value, f.org.value, f.contact.value, '', (f.source ? f.source.value + ' · ' : '') + f.topic.value, '', f.task.value, '', '— ' + location.href].join('\n');
+    location.href = 'mailto:' + form.getAttribute('data-to') + '?subject=' + encodeURIComponent('ECOTECH · ' + (f.source ? f.source.value + ' · ' : '') + f.topic.value) + '&body=' + encodeURIComponent(body);
   });
 
   /* ---------- живой фон первого экрана: потоки воды, тепла и данных ---------- */
