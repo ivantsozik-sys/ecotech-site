@@ -1,6 +1,9 @@
 <?php
-/* ЭКОТЕХ · приём заявки с международной версии сайта (v1.2, 13.10.2026).
-   Ничего не сохраняет на сервере: письмо уходит на info@ecotechnew.ru, вложение — только в письме. */
+/* ЭКОТЕХ · приём заявки с международной версии сайта (v1.3, 17.10.2026).
+   Ничего не сохраняет на сервере: письмо уходит на info@ecotechnew.ru (почта на Джино, РФ), вложение — только в письме.
+   v1.3: каждой заявке присваивается номер Z-ГГГГ-XXXXXX (в теме и тексте письма).
+   Если на сервере есть файл ~/ecotech-config/make.php (вне публичной папки, в git не хранится),
+   в Make уходит ТОЛЬКО номер заявки и значения из закрытых списков — без имени, организации, контакта, текста и файла (152-ФЗ, ч. 5 ст. 18). */
 declare(strict_types=1);
 date_default_timezone_set('Europe/Moscow');
 const TO = 'info@ecotechnew.ru';
@@ -31,6 +34,32 @@ function field(string $k, int $max): string {
     return mb_substr($v, 0, $max);
 }
 function hdr(string $s): string { return '=?UTF-8?B?' . base64_encode(str_replace(["\r", "\n"], ' ', $s)) . '?='; }
+function lead_id(): string {
+    $abc = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; $id = '';
+    for ($i = 0; $i < 6; $i++) $id .= $abc[random_int(0, strlen($abc) - 1)];
+    return 'Z-' . date('Y') . '-' . $id;
+}
+/* Закрытые списки: в Make уходит значение только если оно есть в списке, иначе «другое». */
+const SOURCES = ['Скважина', 'Река или озеро', 'Бытовые стоки', 'Производственная вода', 'Солоноватая или морская', 'Вода после водоканала', 'Отходы → тепло', 'Экоцикл: вода + тепло', 'Другое'];
+const TOPICS = ['Подбор схемы очистки', 'Пилот на объекте', 'Бесплатное обследование объекта', 'Тепло из отходов', 'Партнёрство', 'Инвестиции'];
+function band(string $flow): string {
+    $f = (float)str_replace(',', '.', $flow);
+    if ($flow === '' || $f <= 0) return 'не указан';
+    return $f < 1 ? 'до 1 м³/ч' : ($f < 5 ? '1–5 м³/ч' : ($f < 20 ? '5–20 м³/ч' : 'более 20 м³/ч'));
+}
+function notify_make(array $p): void {
+    $home = getenv('HOME') ?: dirname(__DIR__, 3);
+    $cfgFile = rtrim($home, '/') . '/ecotech-config/make.php';
+    if (!is_file($cfgFile) || !function_exists('curl_init')) return;
+    $cfg = include $cfgFile;
+    if (!is_array($cfg) || empty($cfg['hook']) || empty($cfg['secret'])) return;
+    $ch = curl_init((string)$cfg['hook']);
+    curl_setopt_array($ch, [CURLOPT_POST => true, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 5,
+        CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+        CURLOPT_POSTFIELDS => json_encode(['secret' => (string)$cfg['secret']] + $p, JSON_UNESCAPED_UNICODE)]);
+    @curl_exec($ch);
+    curl_close($ch);
+}
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') done(false, 'POST only', 405);
 if (field('website', 200) !== '') done(true, 'ok');                       // ловушка для ботов
@@ -42,7 +71,8 @@ $task = field('task', 5000); $topic = field('topic', 200); $source = field('sour
 $flow = field('flow', 100); $src = preg_replace('/[^\w.=;\/ \-]/u', '', field('src', 300)) ?? ''; $lang = preg_replace('/[^a-z]/', '', field('lang', 5)) ?: 'ru';
 if ($name === '' || $contact === '' || $task === '' || empty($_POST['consent'])) done(false, 'required fields', 400);
 
-$body = "Новая заявка с сайта ecotechnew.ru/global/{$lang}/\n\n"
+$lead = lead_id();
+$body = "Заявка {$lead}\nНовая заявка с сайта ecotechnew.ru/global/{$lang}/\n\n"
       . "Что очищаем: {$source}\nТема: {$topic}\nРасход, м³/ч: " . ($flow !== '' ? $flow : '—') . "\n\n"
       . "Имя: {$name}\nОрганизация и страна: {$org}\nКонтакт: {$contact}\n\nЗадача:\n{$task}\n\n"
       . "Источник перехода: " . ($src !== '' ? $src : 'не указан') . "\n"
@@ -58,7 +88,7 @@ if ($hasFile) {
 
 $headers = ['From: ' . hdr('Сайт ЭКОТЕХ') . ' <' . FROM . '>', 'MIME-Version: 1.0'];
 if (filter_var($contact, FILTER_VALIDATE_EMAIL)) $headers[] = 'Reply-To: ' . $contact;
-$subject = hdr('Заявка ЭКОТЕХ · ' . ($source ?: $topic) . ' · ' . $name);
+$subject = hdr('Заявка ЭКОТЕХ ' . $lead . ' · ' . ($source ?: $topic) . ' · ' . $name);
 
 if ($hasFile) {
     $b = 'b' . bin2hex(random_bytes(12));
@@ -73,4 +103,14 @@ if ($hasFile) {
     $msg = chunk_split(base64_encode($body));
 }
 $ok = @mail(TO, $subject, $msg, implode("\r\n", $headers), '-f' . FROM);
-$ok ? done(true, 'ok') : done(false, 'mail failed', 500);
+if (!$ok) done(false, 'mail failed', 500);
+notify_make([
+    'lead_id' => $lead,
+    'client_type' => 'не указан',
+    'okrug' => $lang === 'ru' ? 'не указан' : 'зарубеж (' . $lang . ')',
+    'segment' => in_array($source, SOURCES, true) ? $source : 'Другое',
+    'request_type' => in_array($topic, TOPICS, true) ? $topic : 'другое',
+    'volume_band' => band($flow),
+    'source' => 'ecotechnew.ru/global/' . $lang . ($hasFile ? ' · с вложением' : ''),
+]);
+done(true, 'ok');
