@@ -118,10 +118,25 @@
       var body = 'Имя: ' + name + '\nОрганизация: ' + form.org.value.trim() + '\nКонтакт: ' + contact + '\n\nЗадача:\n' + form.task.value.trim();
       var href = 'mailto:info@ecotechnew.ru?subject=' + encodeURIComponent('ЭКОТЕХ · ' + tl) + '&body=' + encodeURIComponent(body);
       var okEl = document.getElementById('form-ok');
-      okEl.textContent = 'Открываем письмо в вашей почтовой программе. Если оно не открылось, напишите на info@ecotechnew.ru или позвоните +7 916 278-87-84.';
-      window.location.href = href;
-      okEl.classList.add('on');
-      
+      function viaMail() {
+        okEl.textContent = 'Открываем письмо в вашей почтовой программе. Если оно не открылось, напишите на info@ecotechnew.ru или позвоните +7 916 278-87-84.';
+        window.location.href = href; okEl.classList.add('on');
+      }
+      /* основной путь: заявка уходит на сервер сайта (Джино, РФ) → письмо на info@; запасной — почтовая программа */
+      if (!window.fetch || !window.FormData) { viaMail(); return; }
+      var fd = new FormData();
+      fd.append('lang', 'ru'); fd.append('ts', String(Date.now() - 5000)); fd.append('src', 'kontakty');
+      fd.append('name', name); fd.append('org', form.org.value.trim()); fd.append('contact', contact);
+      fd.append('task', task); fd.append('topic', tl); fd.append('source', 'Другое'); fd.append('consent', '1');
+      okEl.textContent = 'Отправляем…'; okEl.classList.add('on');
+      fetch('/global/send.php', { method: 'POST', body: fd, headers: { 'Accept': 'application/json' } })
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          if (j && j.ok) { okEl.textContent = 'Заявка принята. Спасибо! Ответим в рабочее время.'; form.reset(); }
+          else viaMail();
+        })
+        ['catch'](viaMail);
+
     });
   }
 })();
